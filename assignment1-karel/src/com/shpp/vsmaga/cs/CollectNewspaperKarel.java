@@ -1,4 +1,4 @@
-package com.shpp.rshmelev.cs;
+package com.shpp.vsmaga.cs;
 
 import com.shpp.karel.KarelTheRobot;
 
