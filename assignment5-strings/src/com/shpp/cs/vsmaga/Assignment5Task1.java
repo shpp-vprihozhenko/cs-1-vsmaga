@@ -10,11 +10,14 @@ public class Assignment5Task1 extends TextProgram{
         /* Repeatedly prompt the user for a word and print out the estimated
          * number of syllables in that word.
          */
-        while (true) {
-            String word = readLine("Enter a single word: ");
-            word = filterString(word);
 
+        while (true) {
+            String word = readLine("Enter a single word or type END to exit the program: ");
+            word = filterString(word);
             println("  Syllable count: " + syllablesIn(word));
+            if (word.equals("end")){
+                break;
+            }
         }
     }
 
