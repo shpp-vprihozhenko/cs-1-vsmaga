@@ -18,7 +18,7 @@ import java.awt.event.MouseEvent;
 public class Breakout extends WindowProgram {
     /** Width and height of application window in pixels */
     public static final int APPLICATION_WIDTH = 400;
-    public static final int APPLICATION_HEIGHT = 600;
+    public static final int APPLICATION_HEIGHT = 550;
 
     /** Dimensions of game board (usually the same) */
     private static final int WIDTH = APPLICATION_WIDTH;
@@ -84,7 +84,12 @@ public class Breakout extends WindowProgram {
     private int deletedBricksCounter = 0;
 
 
-
+    /** Provides the main game logic:
+     * User can move the paddle with mouse and beat the ball using the paddle
+     * User have three attempts to knock down all bricks
+     * Every new attempt not begins until the user clicks the mouse.
+     * It displays the number of remaining attempts and the final result in blinking message
+    * */
     public void run() {
         int turnCounter = 0; //attempt counter
         addMouseListeners();
@@ -107,7 +112,7 @@ public class Breakout extends WindowProgram {
                 ballFell = false; // resets flag of the fallen ball before a new attempt
                 waitForClick();
                 gameIsStart = true; //disable control of of the ball with the mouse
-                runBall(ball);
+                runBall();
 
 
             }
@@ -125,7 +130,10 @@ public class Breakout extends WindowProgram {
 
     }
 
-    /* This method blinks on the screen received label */
+    /** This method blinks on the screen received label
+    *
+    * @param message GLabel that will be animated
+    */
     private void blinkMessage(GLabel message) {
         for (int i = 0; i < BLINK_NUM; i++){
             add(message);
@@ -135,7 +143,12 @@ public class Breakout extends WindowProgram {
         }
     }
 
-    /*this method returns a centered label with received text and color*/
+    /** This method create a message with result of game
+    *
+    * @param text Text with final message
+    * @param color Color of the final text
+    * @return GLabel with received text and color in the center of the window
+    */
     private GLabel createMessage(String text, Color color) {
         GLabel message = new GLabel(text);
         message.setFont("Arial Black-25");
@@ -146,7 +159,8 @@ public class Breakout extends WindowProgram {
         return message;
     }
 
-    /*This method draws a rows of the bricks with specified number and size*/
+    /* This method draws a rows of the bricks with specified number and size
+    * */
     private void createBricks() {
         double xStart = (WIDTH - ((NBRICKS_PER_ROW*BRICK_WIDTH) + ((NBRICKS_PER_ROW-1) *BRICK_SEP))) / 2 ; // starting coordinate x
         double yStart = BRICK_Y_OFFSET; // starting coordinate y
@@ -182,7 +196,12 @@ public class Breakout extends WindowProgram {
 
     }
 
-    /* This method draws a brick with received coordinates and color*/
+    /** This method draws a brick with received coordinates and color
+    *
+    * @param x Coordinate X of resulted brick
+    * @param y Coordinate X of resulted brick
+    * @param color Color of resulted brick
+    */
     private void drawBrick(double x, double y, Color color) {
         GRect box = new GRect(x, y, BRICK_WIDTH, BRICK_HEIGHT);
         box.setFilled(true);
@@ -190,17 +209,28 @@ public class Breakout extends WindowProgram {
         add(box);
     }
 
-    /*This method sets paddle in the start position*/
+    /** This method sets paddle in the start position
+    *
+    * @param paddle Paddle that will be located in the center of the window horizontally  on the line with offset
+    * from down specified by constant PADDLE_Y_OFFSET
+    */
     private void paddleToStartPosition(GRect paddle) {
         paddle.setLocation((WIDTH - PADDLE_WIDTH) / 2, HEIGHT - PADDLE_HEIGHT - PADDLE_Y_OFFSET);
     }
 
-    /*This method sets ball in the start position*/
+    /** This method sets ball in the start position
+    *
+    * @param ball Ball that will be located in the center of the window horizontally  on the line under the paddle
+    */
     private void ballToStartPosition(GOval ball) {
         ball.setLocation((WIDTH / 2) - BALL_RADIUS, HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT - (BALL_RADIUS * 2));
     }
 
-    /*This method returns ball with received radius and specified color*/
+    /** This method returns ball with received radius and blue color
+    *
+    * @param radius The radius of the ball
+    * @return Blue GOval with received radius
+    */
     private GOval createBall(int radius) {
         GOval ball = new GOval(radius * 2, radius * 2);
         ball.setFilled(true);
@@ -209,7 +239,12 @@ public class Breakout extends WindowProgram {
         return ball;
     }
 
-    /*This method returns paddle with received size and specified color*/
+    /** This method returns paddle with received size and specified color
+    *
+    * @param paddleWidth The width of the resulted rectangle
+    * @param paddleHeight The height of the resulted rectangle
+    * @return Gray rectangle with received  size
+    */
     private GRect createPaddle(int paddleWidth, int paddleHeight) {
         GRect paddle = new GRect(paddleWidth, paddleHeight );
         paddle.setFilled(true);
@@ -219,6 +254,8 @@ public class Breakout extends WindowProgram {
     }
 
     @Override
+    /** Check for mouse moving
+    */
     public void mouseMoved(MouseEvent e){
         movePaddle(e); //moves paddle with the mouse
         if (!gameIsStart){ //before the game starts move ball with mouse too.
@@ -228,7 +265,10 @@ public class Breakout extends WindowProgram {
 
     }
 
-    /* This method moves ball with the mouse*/
+    /** This method moves ball with the mouse
+     *
+     * @param e Mouse event received from MouseListener
+     * */
     private void moveBall(MouseEvent e) {
         double x = 0;
         double y = 0;
@@ -248,7 +288,10 @@ public class Breakout extends WindowProgram {
         ball.setLocation(x,y);
     }
 
-    /* This method moves paddle with the mouse*/
+    /** This method moves paddle with the mouse
+     *
+     * @param e Mouse event received from MouseListener
+     * */
     private void movePaddle(MouseEvent e) {
         if (e.getX() < PADDLE_WIDTH / 2){ //mouse near/over the left wall
             paddle.setLocation(0,HEIGHT - PADDLE_HEIGHT - PADDLE_Y_OFFSET);
@@ -260,7 +303,7 @@ public class Breakout extends WindowProgram {
     }
 
     /* This method moves the ball, reflects it off the walls and paddle until the ball falls*/
-    private void runBall(GOval ball) {
+    private void runBall() {
 
         double vx = 0;
         double vy = SPEED_Y;
@@ -268,13 +311,17 @@ public class Breakout extends WindowProgram {
         if (rgen.nextBoolean(0.5)) //with a 50 percent chance change the direction of movement of the ball
             vx = -vx;
 
+        /* While ball not fells down and number of downed bricks less then total number of bricks
+        * check collisions with objects and walls, moves the ball according to physics laws and knocks down bricks.
+        * */
         while (!ballFell){
             if (deletedBricksCounter < NBRICKS_PER_ROW * NBRICK_ROWS) {
                 vy = checkY(ball, vy);
                 vx = checkX(ball, vx);
 
-                vy = checkCollidingY(ball, vy);
+                vx = checkPaddle(vx);
                 vx = checkCollidingX(ball, vx);
+                vy = checkCollidingY(ball, vy);
 
                 ball.move(vx, vy);
                 pause(PAUSE_TIME);
@@ -287,11 +334,43 @@ public class Breakout extends WindowProgram {
 
     }
 
-    /*Processes the horizontal collision with a possible object and returns horizontal offset of the ball*/
+     /** Check left and right end of the paddle for collisions with the ball
+     * and change ball's direction depending on the direction of movement of the ball
+     *
+     * @param vx A shift of the ball on the X axis
+     * @return Changed shift of the ball on the X axis
+     */
+    private double checkPaddle(double vx) {
+        GPoint leftPaddle = new GPoint(paddle.getX() - 1, paddle.getY() + PADDLE_HEIGHT / 2);
+        GPoint rightPaddle = new GPoint(paddle.getX() + PADDLE_WIDTH + 1, paddle.getY() + PADDLE_HEIGHT / 2);
+        if (getElementAt(leftPaddle) != null){
+           if (vx > 0 ){    //change the direction of the ball if it moves to a meeting the left end of the paddle
+               vx = - vx;
+           }
+        }
+        if (getElementAt(rightPaddle) != null){
+            if (vx < 0 ){   //change the direction of the ball if it moves to a meeting the right end of the paddle
+                vx = - vx;
+            }
+        }
+        return vx;
+    }
+
+    /** Processes the horizontal collision with a possible object
+     * and returns horizontal shift of the ball
+     * Change the direction of the ball if it collides with any object and knock down collided bricks
+     *
+     * @param ball The ball for check
+     * @param vx  A shift of the ball on the X axis
+     * @return Changed shift of the ball on the X axis
+     * */
     private double checkCollidingX(GOval ball, double vx) {
         GObject collider = getCollidingObjectX(ball);
         if (collider != null){
-            vx = -vx; //change the direction of move
+            if (ball.getY() + BALL_RADIUS < HEIGHT - PADDLE_Y_OFFSET) {
+                vx = -vx; //change the direction of move
+            }
+
             if (collider != paddle){ //removes the colliding brick
                 remove(collider);
                 deletedBricksCounter++;
@@ -303,37 +382,66 @@ public class Breakout extends WindowProgram {
         return vx;
     }
 
-    /*Returns the horizontal colliding object*/
+    /**
+     * It check four points of the ball (left, right, southwest and southeast) for colliding with any objects
+     * and return link to object in any point
+     *
+     * @param ball The ball for check
+     * @return Link to the object in the points or NULL if there are no objects
+     * */
     private GObject getCollidingObjectX(GOval ball) {
         GObject collider = null;
 
-        collider = getElementAt(ball.getX() - 1 , ball.getY() + BALL_RADIUS); //check the left of ball
+        collider = getElementAt(ball.getX() - 1 , ball.getY() + BALL_RADIUS); //check the left point of ball
         if (collider != null){
             return collider;
         }
 
-        collider = getElementAt(ball.getX() + (BALL_RADIUS * 2) + 1, ball.getY() + BALL_RADIUS); //check the right of ball
+        collider = getElementAt(ball.getX() + (BALL_RADIUS * 2) + 1,
+                ball.getY() + BALL_RADIUS); //check the right point of ball
         if (collider != null){
             return collider;
         }
+
+
+        collider = getElementAt(ball.getX() + BALL_RADIUS - (BALL_RADIUS / Math.sqrt(2)) - 1,
+                ball.getY() + BALL_RADIUS + (BALL_RADIUS / Math.sqrt(2))); //check the southwest point of ball
+        if (collider != null){
+            return collider;
+        }
+
+        collider = getElementAt(ball.getX() + BALL_RADIUS +(BALL_RADIUS / Math.sqrt(2)) + 1,
+                ball.getY() + BALL_RADIUS + (BALL_RADIUS / Math.sqrt(2))); //check the southeast point of ball
+        if (collider != null){
+            return collider;
+        }
+
 
         return null;
     }
 
-    /*Processes the vertical collision with a possible object and returns vertical offset of the ball*/
+    /** Processes the vertical collision with a possible object
+     * and returns vertical shift of the ball
+     * Change the direction of the ball if it collides with any object and knock down collided bricks
+     * Also speeds up the ball if it collides with the paddle
+     *
+     * @param ball The ball for check
+     * @param vy  A shift of the ball on the Y axis
+     * @return Changed shift of the ball on the Y axis
+     * */
     private double checkCollidingY(GOval ball, double vy) {
         GObject collider = getCollidingObjectY(ball);
         if (collider != null){
-            vy = -vy; //change the direction of move
+            if (ball.getY() + BALL_RADIUS * 2 < HEIGHT - PADDLE_HEIGHT- PADDLE_Y_OFFSET + 1) {
+                vy = -vy; //change the direction of move
+            }
             if (collider != paddle){ //removes the colliding brick
                 remove(collider);
                 deletedBricksCounter++;
 
             }
             else {
-                if (vy > 0){ //prevents from sticking the ball with paddle
-                    vy = -vy;
-                }
+
                 vy = vy - 0.1; //speedup the ball with every new colliding with the paddle
             }
         }
@@ -341,7 +449,13 @@ public class Breakout extends WindowProgram {
         return vy;
     }
 
-    /*Returns the vertical colliding object*/
+    /**
+     * It check six points of the ball (left, right, southwest, southeast, northwest and northeast)
+     * for colliding with any objects and return link to object in any point
+     *
+     * @param ball The ball for check
+     * @return Link to the object in the points or NULL if there are no objects
+     * */
     private GObject getCollidingObjectY(GOval ball) {
         GObject collider = null;
 
@@ -350,34 +464,44 @@ public class Breakout extends WindowProgram {
             return collider;
         }
 
-        collider = getElementAt(ball.getX() + BALL_RADIUS, ball.getY() + (BALL_RADIUS * 2) + 1); //check the down of ball
+        collider = getElementAt(ball.getX() + BALL_RADIUS,
+                ball.getY() + (BALL_RADIUS * 2) + 1); //check the down of ball
         if (collider != null){
             return collider;
         }
 
-        collider = getElementAt(ball.getX(), ball.getY()); //check the northwest corner of ball
+        collider = getElementAt(ball.getX() + BALL_RADIUS - (BALL_RADIUS / Math.sqrt(2)) - 1,
+                ball.getY() + BALL_RADIUS - (BALL_RADIUS / Math.sqrt(2))); //check the northwest corner of ball
         if (collider != null){
             return collider;
         }
 
-        collider = getElementAt(ball.getX() + (BALL_RADIUS * 2), ball.getY()); //check the northeast corner of ball
+        collider = getElementAt(ball.getX() + BALL_RADIUS +(BALL_RADIUS / Math.sqrt(2)) + 1,
+                ball.getY() + BALL_RADIUS - (BALL_RADIUS / Math.sqrt(2))); //check the northeast corner of ball
         if (collider != null){
             return collider;
         }
 
-        collider = getElementAt(ball.getX(), ball.getY() + (BALL_RADIUS * 2)); //check the southwest corner of ball
+
+        collider = getElementAt(ball.getX(), ball.getY() + BALL_RADIUS * 2); //check the southwest corner of ball
         if (collider != null){
             return collider;
         }
 
-        collider = getElementAt(ball.getX() + (BALL_RADIUS * 2), ball.getY() + (BALL_RADIUS * 2)); //check the southeast corner of ball
+        collider = getElementAt(ball.getX() + BALL_RADIUS * 2,
+                ball.getY() + BALL_RADIUS * 2); //check the southeast corner of ball
         if (collider != null){
             return collider;
         }
         return null;
     }
 
-    /*Rebound ball from the left and right wall*/
+    /** Rebound ball from the left and right wall
+     * Change the direction of ball's movement if it collides with the right or the left wall
+     *
+     * @param ball The ball for check the collision with wall
+     * @return Changed shift of the ball on the X axis
+     * */
     private double checkX(GOval ball, double vx) {
         if (ball.getX() >= WIDTH - (BALL_RADIUS * 2))
             vx = -vx;
@@ -387,7 +511,13 @@ public class Breakout extends WindowProgram {
         return vx;
     }
 
-    /*Rebound ball from the top wall and set the flag if the ball fells*/
+    /** Rebound ball from the top wall and set the flag if the ball fells
+     * Change the direction of ball's movement if it collides with the top wall
+     * or set flag ballFell and stops the attempt if ball fells down
+     *
+     * @param ball The ball for check the collision with wall
+     * @return Changed shift of the ball on the Y axis
+     * */
     private double checkY(GOval ball, double vy) {
         if (ball.getY()>= HEIGHT){
             ballFell = true;
