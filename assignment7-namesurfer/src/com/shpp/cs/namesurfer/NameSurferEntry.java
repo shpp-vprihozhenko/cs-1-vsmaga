@@ -12,8 +12,10 @@ import java.util.*;
 
 public class NameSurferEntry implements NameSurferConstants {
 
+    /* */
     private String name = null;
     private ArrayList<Integer> ranks = new ArrayList<Integer>();
+
 	/* Constructor: NameSurferEntry(line) */
 
     /**
@@ -23,7 +25,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * decade.
      */
     public NameSurferEntry(String line) {
-       StringTokenizer tokenizer = new StringTokenizer(line);
+        StringTokenizer tokenizer = new StringTokenizer(line);
         int counter = 0;
         String buffer = null;
         while (true){
@@ -48,7 +50,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * Returns the name associated with this entry.
      */
     public String getName() {
-        // You need to turn this stub into a real implementation //
+
         return name;
     }
 
@@ -62,7 +64,7 @@ public class NameSurferEntry implements NameSurferConstants {
      * not appear in a decade, the rank value is 0.
      */
     public int getRank(int decade) {
-        // You need to turn this stub into a real implementation //
+
         return ranks.get(decade);
     }
 

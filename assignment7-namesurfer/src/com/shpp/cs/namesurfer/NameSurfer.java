@@ -26,6 +26,7 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
      * and initializing the interactors at the top of the window.
      */
     public void init() {
+
         nameField = new JTextField(20);
         graphButton = new JButton("Graph");
         clearButton = new JButton("Clear");
@@ -33,15 +34,17 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
         add(nameField, NORTH);
         add(graphButton, NORTH);
         add(clearButton, NORTH);
+
         nameField.setActionCommand("enter");
         nameField.addActionListener(this);
+
         addActionListeners();
+
 		dB = new NameSurferDataBase(NAMES_DATA_FILE);
+
         graph = new NameSurferGraph();
         add(graph, CENTER);
 
-
-        // You fill this in, along with any helper methods //
     }
 
 	/* Method: actionPerformed(e) */
@@ -65,20 +68,28 @@ public class NameSurfer extends SimpleProgram implements NameSurferConstants {
         }
     }
 
+    /**
+     * This method receives name from JTextField and gives it to the constructor of a class NameSurferDataBase,
+     * that using the method findEntry returns the instance of a class NameSurferEntry and put as the parameter
+     * of method addEntry of a class NameSurferGraph
+     *
+     * @param text Text received from interactor JTextField
+    * */
     private void drawGraph(String text) {
         if (text != null){
             text = filterString(text);
             graph.addEntry(dB.findEntry(text));
 
-            /*String buffer = dB.findEntry(text).toString();
-            if (buffer != null) {
-
-                println(buffer);
-            }
-*/
         }
     }
 
+    /**
+     * This method receives the text and filters it by removing all non alphabetic characters
+     * and converts all letters to lowercase
+     *
+     * @param word Text for filtering
+     * @return Filtered text
+    * */
     private String filterString(String word) {
         String res = "";
         for (int i = 0; i < word.length(); i++){
